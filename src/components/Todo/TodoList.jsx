@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { FaCheckCircle, FaEdit, FaTrash } from 'react-icons/fa'
+import { FaCheckCircle, FaEdit, FaTrashAlt } from 'react-icons/fa'
 
 const ListItem = styled.li`
   display: flex;
@@ -69,11 +69,26 @@ const ButtonDelete = styled.button`
   }
 `
 
-export const TodoList = ({ todos, setTodos }) => {
+export const TodoList = ({ todos, setTodos, setEditTodo }) => {
+  const handleIsDone = (todo) => {
+    setTodos(
+      todos.map((item) => {
+        if (item.id === todo.id) {
+          return { ...item, isDone: !item.isDone }
+        }
+        return item
+      }),
+    )
+  }
+
+  const handleEdit = ({ id }) => {
+    const findTodo = todos.find((todo) => todo.id === id)
+    setEditTodo(findTodo)
+  }
+
   const handleDelete = ({ id }) => {
     setTodos(todos.filter((todo) => todo.id !== id))
   }
-  console.log(todos)
   return (
     <div>
       {todos.map((todo) => (
@@ -82,16 +97,21 @@ export const TodoList = ({ todos, setTodos }) => {
             type="text"
             value={todo.title}
             onChange={(e) => e.preventDefault()}
+            style={{
+              textDecorationColor: '#ff6c6c',
+              textDecorationStyle: 'solid',
+              textDecorationLine: todo.isDone ? 'line-through' : '',
+            }}
           />
           <div>
-            <ButtonComplete>
+            <ButtonComplete onClick={() => handleIsDone(todo)}>
               <FaCheckCircle />
             </ButtonComplete>
-            <ButtonEdit>
+            <ButtonEdit onClick={() => handleEdit(todo)}>
               <FaEdit />
             </ButtonEdit>
             <ButtonDelete onClick={() => handleDelete(todo)}>
-              <FaTrash />
+              <FaTrashAlt />
             </ButtonDelete>
           </div>
         </ListItem>

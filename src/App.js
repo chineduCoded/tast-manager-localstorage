@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from "styled-components"
 import { TodoForm } from './components/Form/TodoForm'
 import { Header } from './components/Header/Header'
@@ -24,8 +24,15 @@ margin-bottom: 10px;
 `
 
 const App = () => {
+
+  const initiatState = JSON.parse(localStorage.getItem("todos")) || []
   const [input, setInput] = useState("")
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState(initiatState)
+  const [editTodo, setEditTodo] = useState(null)
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos))
+  }, [todos])
   return (
     <Container>
       <Wrapper>
@@ -35,10 +42,12 @@ const App = () => {
           input={input}
           setInput={setInput}
           todos={todos}
-          setTodos={setTodos} />
+          setTodos={setTodos}
+          editTodo={editTodo}
+          setEditTodo={setEditTodo} />
         </div>
         <div>
-          <TodoList todos={todos} setTodos={setTodos} />
+          <TodoList todos={todos} setTodos={setTodos} setEditTodo={setEditTodo} />
         </div>
       </Wrapper>
     </Container>

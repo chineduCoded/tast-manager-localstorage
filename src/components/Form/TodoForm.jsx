@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -35,17 +35,42 @@ const AddButton = styled.button`
   }
 `
 
-export const TodoForm = ({ input, setInput, todos, setTodos }) => {
+export const TodoForm = ({
+  input,
+  setInput,
+  todos,
+  setTodos,
+  editTodo,
+  setEditTodo,
+}) => {
+  const updateTodo = (title, id, isDone) => {
+    const newTodo = todos.map((todo) =>
+      todo.id === id ? { title, id, isDone } : todo,
+    )
+    setTodos(newTodo)
+    setEditTodo('')
+  }
+
+  useEffect(() => {
+    if (editTodo) {
+      setInput(editTodo.title)
+    } else {
+      setInput('')
+    }
+  }, [setInput, editTodo])
+
   const handleChange = (e) => {
-    if (!input) return
     setInput(e.target.value)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!input) return
-    setTodos([...todos, { id: uuidv4(), title: input, isDone: false }])
-    setInput('')
+    if (!editTodo) {
+      setTodos([...todos, { id: uuidv4(), title: input, isDone: false }])
+      setInput('')
+    } else {
+      updateTodo(input, editTodo.id, editTodo.isDone)
+    }
   }
 
   return (
@@ -56,7 +81,7 @@ export const TodoForm = ({ input, setInput, todos, setTodos }) => {
         value={input}
         onChange={handleChange}
       />
-      <AddButton type="submit">New Todo</AddButton>
+      <AddButton type="submit">{editTodo ? 'Update' : 'New Todo'}</AddButton>
     </Form>
   )
 }
